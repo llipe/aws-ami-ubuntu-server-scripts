@@ -2,8 +2,8 @@
 
 # Check if domain name is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <domain>"
-  exit 1
+    echo "Usage: $0 <domain>"
+    exit 1
 fi
 
 DOMAIN=$1
@@ -20,7 +20,7 @@ sudo chown -R www-data:www-data /home/ubuntu/$DOMAIN/public
 sudo chown -R www-data:www-data /home/ubuntu/$DOMAIN/log
 
 # Configure Nginx for the domain
-sudo tee /etc/nginx/sites-available/$DOMAIN > /dev/null <<EOT
+sudo tee /etc/nginx/sites-available/$DOMAIN >/dev/null <<EOT
 server {
     listen 80;
     listen [::]:80;
@@ -51,13 +51,12 @@ sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
 
 # Configure log rotation
 # Check if logrotate is installed
-if ! command -v logrotate &> /dev/null
-then
+if ! command -v logrotate &>/dev/null; then
     echo "Logrotate is not installed. Installing Logrotate..."
     sudo apt update
     sudo apt install logrotate -y
 fi
-sudo tee /etc/logrotate.d/$DOMAIN > /dev/null <<EOT
+sudo tee /etc/logrotate.d/$DOMAIN >/dev/null <<EOT
 /home/ubuntu/$DOMAIN/log/*.log {
     daily
     missingok

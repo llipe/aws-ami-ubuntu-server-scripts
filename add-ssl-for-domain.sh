@@ -1,4 +1,3 @@
-
 # This script adds SSL certificate for a domain using Certbot and Nginx.
 
 # Parameters:
@@ -24,10 +23,9 @@ fi
 
 # Obtain SSL certificate
 # check if certbot is installed
-if ! command -v certbot &> /dev/null
-then
-    echo "Certbot is not installed. Installing Certbot..."
-    sudo apt update
-    sudo apt install certbot python3-certbot-nginx -y
+if ! command -v certbot &>/dev/null; then
+  echo "Certbot is not installed. Installing Certbot..."
+  sudo apt update
+  sudo apt install certbot python3-certbot-nginx -y
 fi
 sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos -m $EMAIL

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script is used to add a new domain to an Ubuntu server running Nginx and PHP-FPM.
-# It creates directories for the domain, sets permissions, configures Nginx, enables the site, and restarts Nginx.
-
 # Check if domain name is provided
 if [ -z "$1" ]; then
   echo "Usage: $0 <domain>"
@@ -42,36 +39,7 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        include fastcgi_params;
-    }
-}
-
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-
-    root /home/ubuntu/$DOMAIN/public;
-    index index.php index.html index.htm;
-
-    server_name $DOMAIN www.$DOMAIN;
-
-    access_log /home/ubuntu/$DOMAIN/log/access.log;
-    error_log /home/ubuntu/$DOMAIN/log/error.log;
-
-    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php$PHP_INSTALLED_VERSION-fpm.sock;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -80,19 +48,6 @@ EOT
 
 # Enable the new site for the domain
 sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
-
-# Restart Nginx
-sudo systemctl restart nginx
-
-# Obtain SSL certificate
-# check if certbot is installed
-if ! command -v certbot &> /dev/null
-then
-    echo "Certbot is not installed. Installing Certbot..."
-    sudo apt update
-    sudo apt install certbot python3-certbot-nginx -y
-fi
-sudo certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos -m your-email@example.com
 
 # Configure log rotation
 # Check if logrotate is installed
@@ -118,6 +73,7 @@ sudo tee /etc/logrotate.d/$DOMAIN > /dev/null <<EOT
 }
 EOT
 
-# Reload Nginx to apply the new configuration
-sudo systemctl reload nginx
+# Restart Nginx
+sudo systemctl restart nginx.service
+
 echo "Nginx and PHP-FPM installation with HTTPS and log rotation completed for $DOMAIN!"

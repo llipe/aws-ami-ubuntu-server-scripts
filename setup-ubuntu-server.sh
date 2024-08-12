@@ -18,48 +18,50 @@ sudo systemctl enable nginx
 
 # Install AWS CLI
 #TODO: aws configure is requiered and you need to provide your AWS Access Key ID, AWS Secret Access Key, Default region name, and Default output format
-sudo apt install awscli -y
-
-# Install wp-cli for WordPress management
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x wp-cli.phar
-sudo mv wp-cli.phar /usr/local/bin/wp
-wp --info
-
+sudo snap install aws-cli --classic
 
 # Install PHP 8.3 and PHP-FPM along with required PHP modules for WordPress
-sudo apt install php8.3-fpm php8.3-mysql php8.3-curl php8.3-gd php8.3-mbstring php8.3-xml php8.3-xmlrpc php8.3-soap php8.3-intl php8.3-zip -y
+sudo apt install php-fpm php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip -y
+
+# Check /etc/php directory for the PHP version installed and store it in a variable
+PHP_INSTALLED_VERSION=$(ls /etc/php)
 
 # Configure PHP-FPM
-sudo sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.4/fpm/php.ini
-sudo systemctl restart php7.4-fpm
+sudo sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/$PHP_INSTALLED_VERSION/fpm/php.ini
+sudo systemctl restart php$PHP_INSTALLED_VERSION-fpm.service
 
 # Configure Nginx to use PHP-FPM
-sudo mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
-sudo tee /etc/nginx/sites-available/default > /dev/null <<EOT
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# sudo mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+# sudo tee /etc/nginx/sites-available/default > /dev/null <<EOT
+# server {
+#     listen 80 default_server;
+#     listen [::]:80 default_server;
 
-    root /var/www/html;
-    index index.php index.html index.htm;
+#     root /var/www/html;
+#     index index.php index.html index.htm;
 
-    server_name _;
+#     server_name _;
 
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
+#     location / {
+#         try_files \$uri \$uri/ =404;
+#     }
 
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        include fastcgi_params;
-    }
-}
-EOT
+#     location ~ \.php$ {
+#         include snippets/fastcgi-php.conf;
+#         fastcgi_pass unix:/var/run/php/php-fpm.sock;
+#         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+#         include fastcgi_params;
+#     }
+# }
+# EOT
 
 # Restart Nginx
 sudo systemctl restart nginx
+
+# Install wp-cli for WordPress management
+sudo curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+sudo chmod +x wp-cli.phar
+sudo mv wp-cli.phar /usr/local/bin/wp
+wp --info
 
 echo "Nginx, PHP-FPM, awscli and wp-cli installation completed"

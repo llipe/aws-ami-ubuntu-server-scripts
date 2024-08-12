@@ -1,4 +1,4 @@
-# aws-ami-ubuntu-server-scripts
+# AWS AMI Ubuntu Server Setup
 Ubuntu Server scripts for setting up a WordPress environment with nginx, PHP, and other necessary configurations.
 
 ## How to use

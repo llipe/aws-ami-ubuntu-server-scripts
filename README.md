@@ -41,7 +41,7 @@ Here are the available scripts:
 
 You can find these scripts in the [aws-ami-ubuntu-server-scripts](https://github.com/llipe/aws-ami-ubuntu-server-scripts) repository.
 
-### Add a New Domain
+### Add a New Domain
 To add a new domain, use the following sintaxis
 
 ```bash

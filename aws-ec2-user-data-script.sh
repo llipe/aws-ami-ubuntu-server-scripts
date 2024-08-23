@@ -16,3 +16,5 @@ sudo chmod +x aws-ami-ubuntu-server-scripts/add-ssl-for-domain.sh
 ./aws-ami-ubuntu-server-scripts/setup-ubuntu-server.sh
 
 # TODO: Disable default nginx site
+sudo rm /etc/nginx/sites-enabled/default
+sudo systemctl reload nginx.service

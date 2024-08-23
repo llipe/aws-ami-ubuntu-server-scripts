@@ -70,3 +70,7 @@ If you need to restart nginx and/or fpm remember they are separate services
 # Current version uses php8.3 hence the name of the service.
 sudo service nginx restart && sudo service php8.3-fpm restart
 ```
+
+## Further documentation
+
+NGINX official docs: https://nginx.org/en/docs/

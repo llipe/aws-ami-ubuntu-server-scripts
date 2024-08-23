@@ -38,10 +38,9 @@ server {
     }
 
     location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php$PHP_INSTALLED_VERSION-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/php$PHP_INSTALLED_VERSION-fpm.sock;
+        include fastcgi.conf;
     }
 }
 EOT
@@ -75,4 +74,4 @@ EOT
 # Restart Nginx
 sudo systemctl restart nginx.service
 
-echo "Nginx and PHP-FPM installation with HTTPS and log rotation completed for $DOMAIN!"
+echo "Nginx and PHP-FPM installation with HTTP and log rotation completed for $DOMAIN!"
